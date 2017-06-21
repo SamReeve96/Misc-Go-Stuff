@@ -9,7 +9,7 @@ import (
 func ValidateEmail(emailStr string) bool {
 	IsValid := false
 	regexStr := `[a-z0-9]+@[a-z0-9]+\.[a-z]+`
-	//altemailStr := "sreeve96@gmail.com"
+	//altemailStr := "sreeve96@gmail.com" Only used in test cases
 	if regexp.MustCompile(regexStr).MatchString(emailStr) == true {
 		IsValid = true
 	} else {
