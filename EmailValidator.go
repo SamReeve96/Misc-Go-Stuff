@@ -5,11 +5,13 @@ import (
 	"regexp"
 )
 
+//ValidateEmail will check to see if the email passed fits the regex
 func ValidateEmail(emailStr string) bool {
 	IsValid := false
 	regexStr := `[a-z0-9]+@[a-z0-9]+\.[a-z]+`
-	//emailStr := "sreeve96@gmail.com"
+	//altemailStr := "sreeve96@gmail.com"
 	if regexp.MustCompile(regexStr).MatchString(emailStr) == true {
+		IsValid = true
 	} else {
 		IsValid = false
 	}
@@ -17,6 +19,6 @@ func ValidateEmail(emailStr string) bool {
 }
 
 func main() {
-	fmt.Println(ValidateEmail("sreeve96@gfkgv897987mail.com"))
-	
+	fmt.Println(ValidateEmail("sreeve96@gmail.com"))
+
 }

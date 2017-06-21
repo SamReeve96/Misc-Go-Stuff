@@ -3,17 +3,33 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"io/ioutil"
+	//"io"
+	//"io/ioutil"
+	"os"
+	//"strings"
 )
 
-
 func main() {
-	fileByte, err := ioutil.ReadFile("Emails.txt")
+	fileReader()
+}
+
+func fileReader() []string {
+	fullFile, err := os.Open("Emails.txt")
+	errCheck(err)
+	var lines []string
+	scanner := bufio.NewScanner(fullFile)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+		fmt.Println(lines)
+	}
+	errCheck(err)
+	return lines
+}
+
+func errCheck(err error) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(fileByte) //print as byte format
-	fileString := string(fileByte) //Convert from byte to string format
-	fmt.Println(fileString) //Print as String
 }
