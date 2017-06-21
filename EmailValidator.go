@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"regexp"
 )
 
@@ -9,7 +11,6 @@ import (
 func ValidateEmail(emailStr string) bool {
 	IsValid := false
 	regexStr := `[a-z0-9]+@[a-z0-9]+\.[a-z]+`
-	//altemailStr := "sreeve96@gmail.com"
 	if regexp.MustCompile(regexStr).MatchString(emailStr) == true {
 		IsValid = true
 	} else {
@@ -19,6 +20,13 @@ func ValidateEmail(emailStr string) bool {
 }
 
 func main() {
-	fmt.Println(ValidateEmail("sreeve96@gmail.com"))
-
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Println("Please enter an address")
+	emailStr, _ := reader.ReadString('\n')
+	Result := ValidateEmail(emailStr)
+	if Result == true {
+		fmt.Println("Address is valid")
+	} else {
+		fmt.Println("Address is not valid")
+	}
 }
