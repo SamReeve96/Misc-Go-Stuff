@@ -11,10 +11,6 @@ import (
 func ValidateEmail(emailStr string) bool {
 	IsValid := false
 	regexStr := `[a-z0-9]+@[a-z0-9]+\.[a-z]+`
-<<<<<<< HEAD
-=======
-	//altemailStr := "sreeve96@gmail.com" Only used in test cases
->>>>>>> 5e747afeb39c45b58f0030e2073807e82d097c60
 	if regexp.MustCompile(regexStr).MatchString(emailStr) == true {
 		IsValid = true
 	} else {
