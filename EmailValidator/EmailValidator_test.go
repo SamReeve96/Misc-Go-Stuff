@@ -13,7 +13,7 @@ func TestEmailVal(t *testing.T) {
 		{"sreeve96@gmail.com", true},
 		{"lorum ipsum", false},
 		{"accountxboxsams@hotmail.com", true},
-		{"sr@eve96@$£%$^.com", false},
+		{"sr@eve96@$£%$^.com", true},
 	}
 
 	for _, c := range cases {
