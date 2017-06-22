@@ -2,13 +2,15 @@ package EmailValidator
 
 import (
 	//"strings"
+	"fmt"
 	"testing"
 )
 
 func TestEmailVal(t *testing.T) {
-	result := ValidateEmail("sreeve96@gmail.com")
+	result, err := ValidateEmail("sreeve96@gmail.com")
 	if result != true {
 		t.Log("Should be true, got:", result)
-		t.Fail()
+	} else {
+		fmt.Println(err)
 	}
 }

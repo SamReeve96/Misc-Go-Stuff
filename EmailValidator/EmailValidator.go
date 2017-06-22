@@ -2,26 +2,27 @@ package EmailValidator
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 	"regexp"
 )
 
 //ValidateEmail will check to see if the email passed fits the regex
-func ValidateEmail(emailStr string) bool {
-	IsValid := false
+func ValidateEmail(emailStr string) (bool, error) {
+	isValid := false
 	regexStr := `[a-z0-9]+@[a-z0-9]+\.[a-z]+`
 	if regexp.MustCompile(regexStr).MatchString(emailStr) == true {
-		IsValid = true
+		isValid = true
 	} else {
-		IsValid = false
+		return false, errors.New("error occured")
 	}
-	if IsValid == true {
+	if isValid == true {
 		fmt.Println(emailStr, "Address is valid")
 	} else {
 		fmt.Println(emailStr, "Address is not valid")
 	}
-	return IsValid
+	return false, nil
 }
 
 func main() {
