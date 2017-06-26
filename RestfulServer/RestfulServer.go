@@ -6,12 +6,6 @@ import (
 	"net/http"
 )
 
-//import(
-//"encoding/json"
-//"fmt"
-//"net/http"
-//	)
-
 type Payload struct {
 	Stuff Data
 }
