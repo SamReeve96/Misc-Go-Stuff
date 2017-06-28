@@ -18,10 +18,3 @@ func ValidateEmail(emailStr string) bool {
 	}
 	return isValid
 }
-
-/* func main() {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("Please enter an address")
-	emailStr, _ := reader.ReadString('\n')
-	ValidateEmail(emailStr)
-} */
