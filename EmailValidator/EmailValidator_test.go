@@ -6,6 +6,7 @@ import (
 )
 
 func TestEmailVal(t *testing.T) {
+	//Create a slice containing serveral test cases
 	cases := []struct {
 		email     string
 		expResult bool
@@ -21,8 +22,12 @@ func TestEmailVal(t *testing.T) {
 		{"Sam@Reeve..com", false},
 	}
 
+	//For in range in go can use the index (what _ is)or value of the object in the data store
+	//being iterated through (what C is)
 	for _, c := range cases {
+		//Pass the value to the validateEmail function in the main .go file
 		result := ValidateEmail(c.email)
+		//If the result is not what was expected, the test has failed, Log this and tell the user
 		if result != c.expResult {
 			t.Log("Should be: " + strconv.FormatBool(c.expResult) + " got: " + strconv.FormatBool(result))
 			t.Fail()

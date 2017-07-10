@@ -1,14 +1,12 @@
-//Thanks to openwonk on Stackoverflow.com
+//This program reads in a whole .txt file.
+//It then stores the file line by line in a slice
 
 package main
 
 import (
 	"bufio"
 	"fmt"
-	//"io"
-	//"io/ioutil"
 	"os"
-	//"strings"
 )
 
 func main() {

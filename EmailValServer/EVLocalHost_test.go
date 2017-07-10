@@ -8,11 +8,12 @@ import (
 )
 
 func TestPassEmail(t *testing.T) {
-
+	//Create a slice containing the test strings and its corresponding expected result
 	cases := []struct {
 		url       string
 		expResult bool
 	}{
+		//This block of tests should pass through to the validator
 		{"/Validate?email=sreeve96@gmail.com", true},
 		{"/Validate?email=accountxboxsams@hotmail.com", true},
 		{"/Validate?email=Sam.James@Reeve.com", true},
@@ -20,7 +21,7 @@ func TestPassEmail(t *testing.T) {
 		{"/Validate?email=Sam-James@Reeve.com", true},
 		{"/Validate?email=email@e*ample.fail", false},
 		{"/Validate?email=Sam@Reeve..com", false},
-
+		//These tests shouldn't pass to the validator as their URL's are the error
 		{"/Validate?email Sam@reeve.com", false},
 		{"/email=sr@eve96.com", false},
 	}
@@ -31,18 +32,18 @@ func TestPassEmail(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		//This creates a rr (responce recorder)
+		//This creates a rr (response recorder)
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(PassEmail)
-
+		handler := http.HandlerFunc(valEmail)
+		//now call the serveHTTP directly and pass the request and response recorder
 		handler.ServeHTTP(rr, req)
 
-		//now call the serveHTTP directly and pass the request and responce recorder
+		//check to see if this was successful, if not show an error
 		if status := rr.Code; status != http.StatusOK {
 			t.Errorf("Handler returned the wrong status code, \n Got: %v  \n Want: %v", status, http.StatusOK)
 		}
 
-		//Use result boolean as this is easier to test when using multiple cases. (Intialise result bool)
+		//capture the body of the webpage, determine the value of a boolean based on the body string
 		result := false
 		if rr.Body.String() == "Your email is valid" {
 			result = true
