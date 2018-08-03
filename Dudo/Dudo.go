@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"strconv"
 )
 
@@ -15,6 +17,7 @@ type Dice struct {
 }
 
 func main() {
+	reader := bufio.NewReader(os.Stdin)
 	var numPlayersString string
 	var players []*Player
 
@@ -27,18 +30,16 @@ func main() {
 	for i := 0; i < numPlayers; i++ {
 		var newPlayername string
 		println("Enter Player Name")
-		fmt.Scanln(&newPlayername)
+		newPlayername, _ = reader.ReadString('\n')
 		newPlayer := &Player{
 			Name: newPlayername,
 		}
 		players = append(players, newPlayer)
 	}
 	println("Great! Lets Play Dudo with:")
-	for i := 0; i < numPlayers; i++ {
-		println(numPlayers[i])
+	for _, player := range players {
+		println(player.Name)
 	}
-}
-
-func showName(Player player) {
-	player.showName()
+	round := 0
+	println("Round: " + strconv.Itoa(round))
 }
