@@ -3,21 +3,32 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math/rand"
 	"os"
 	"strconv"
 )
 
 type Player struct {
 	Name      string
-	diceAlive []Dice
+	diceAlive []Die
 }
 
-type Dice struct {
+type Die struct {
 	value int
 }
 
+func (die *Die) roll() int {
+	return rand.Intn(6)
+}
+
 func main() {
-	reader := bufio.NewReader(os.Stdin)
+	roundNumber := 1
+	players := gameStartup()
+	roundRunner(roundNumber, players)
+
+}
+
+func gameStartup() []*Player {
 	var numPlayersString string
 	var players []*Player
 
@@ -28,11 +39,10 @@ func main() {
 		println("something went wrong")
 	}
 	for i := 0; i < numPlayers; i++ {
-		var newPlayername string
-		println("Enter Player Name")
-		newPlayername, _ = reader.ReadString('\n')
+
 		newPlayer := &Player{
-			Name: newPlayername,
+			Name:      assignName(),
+			diceAlive: rollDice(),
 		}
 		players = append(players, newPlayer)
 	}
@@ -40,6 +50,32 @@ func main() {
 	for _, player := range players {
 		println(player.Name)
 	}
-	round := 0
-	println("Round: " + strconv.Itoa(round))
+	return players
+}
+
+func assignName() string {
+	reader := bufio.NewReader(os.Stdin)
+	var newPlayername string
+	println("Enter Player Name")
+	newPlayername, _ = reader.ReadString('\n')
+	return newPlayername
+}
+
+func rollDice() []Die {
+	Dice := []Die{}
+	for i := 0; i < 5; i++ {
+		newDie := Die{
+			value: rand.Intn(6),
+		}
+		Dice = append(Dice, newDie)
+	}
+	return Dice
+}
+
+func roundRunner(roundNumber int, players []*Player) {
+	roundNumber++
+	println("Round: " + strconv.Itoa(roundNumber))
+	for _, player := range players {
+		println(player.Name + "'s Turn")
+	}
 }
