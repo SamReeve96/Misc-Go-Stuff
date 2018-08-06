@@ -1,48 +1,50 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"math/rand"
-	"os"
 	"strconv"
-	"strings"
 )
 
 type Player struct {
-	Name      string
-	diceAlive []Die
+	Name string
+	dice []Die
 }
 
 type Die struct {
 	value int
 }
 
-func (die *Die) roll() int {
+func (die *Die) Roll() int {
 	return rand.Intn(6)
+}
+
+func (player *Player) LoseDie() {
+	playersDice := player.dice
+	//Dont care what die goes just remove
+	playersDice = append(playersDice[:1], playersDice[2:]...)
 }
 
 func main() {
 	roundNumber := 1
 	players := gameStartup()
-	roundRunner(roundNumber, players)
+	RoundRunner(roundNumber, players)
 
 }
 
 func gameStartup() []*Player {
-	var numPlayersString string
 	var players []*Player
-
+	var numPlayersString string
 	println("Let's Play Dudo! How many players?")
-	fmt.Scanln(&numPlayersString)
+	_, err := fmt.Scan(&numPlayersString)
 	numPlayers, err := strconv.Atoi(numPlayersString)
 	if err != nil {
 		println("something went wrong")
 	}
 	for i := 0; i < numPlayers; i++ {
 		newPlayer := &Player{
-			Name:      assignName(),
-			diceAlive: rollDice(),
+			Name: AssignName(),
+			dice: RollDice(6),
 		}
 		players = append(players, newPlayer)
 	}
@@ -53,17 +55,19 @@ func gameStartup() []*Player {
 	return players
 }
 
-func assignName() string {
-	reader := bufio.NewReader(os.Stdin)
+func AssignName() string {
 	var newPlayername string
 	println("Enter Player Name")
-	newPlayername, _ = reader.ReadString('\n')
+	_, err := fmt.Scan(&newPlayername)
+	if err != nil {
+		println("something went wrong")
+	}
 	return newPlayername
 }
 
-func rollDice() []Die {
+func RollDice(numOfDice int) []Die {
 	Dice := []Die{}
-	for i := 0; i < 5; i++ {
+	for i := 0; i < numOfDice; i++ {
 		newDie := Die{
 			value: rand.Intn(6),
 		}
@@ -72,32 +76,44 @@ func rollDice() []Die {
 	return Dice
 }
 
-func roundRunner(roundNumber int, players []*Player) {
+func RoundRunner(roundNumber int, players []*Player) {
 	currentVal := 0
 	currentQuant := 0
-	reader := bufio.NewReader(os.Stdin)
+	var prevPlayer *Player
 	println("Round: " + strconv.Itoa(roundNumber))
 	for i := 0; i < len(players)+1; i++ {
 		if i == len(players) {
-			i = 0
+			i = -1
 		} else {
-			println(players[i].Name + "'s Turn")
+			println("---- " + players[i].Name + "'s Turn ----")
 			if currentVal == 0 {
-				currentVal, currentQuant = startingBet()
+				currentQuant, currentVal = startingBet()
+				prevPlayer = players[i]
 			} else {
 				println("Current bet is: " + strconv.Itoa(currentQuant) + " " + strconv.Itoa(currentVal) + "'s")
 				inputValid := false
 				for inputValid == false {
 					println("Bet(1) or Call BS(2)")
-					stringChoice, _ := reader.ReadString('\n')
-					if stringChoice == "1\n" {
-						currentVal, currentQuant = bet(currentVal, currentQuant)
-					} else if stringChoice == "2\n" {
-						callBS()
-						currentVal = 0
-						currentQuant = 0
-						i = 0
+					var choice string
+					_, err := fmt.Scan(&choice)
+					if err != nil {
+						println("something went wrong")
+					}
+					if choice == "1" {
+						inputValid = true
+						currentQuant, currentVal = bet(currentQuant, currentVal)
+						prevPlayer = players[i]
+					} else if choice == "2" {
+						inputValid = true
+						println("Calling BS")
+						revealDice(players)
+						callBS(players, players[i], prevPlayer, currentQuant, currentVal)
+						println("New Round")
 						roundNumber++
+						for i := 0; i < len(players); i++ {
+							players[i].dice = RollDice(len(players[i].dice))
+						}
+						RoundRunner(roundNumber, players)
 					} else {
 						println("Invalid input")
 					}
@@ -105,28 +121,87 @@ func roundRunner(roundNumber int, players []*Player) {
 			}
 		}
 	}
-} ///////////////////////////////////////////////Notes Broken Menu and reversed Quant and val
+}
 
 func startingBet() (int, int) {
-	reader := bufio.NewReader(os.Stdin)
-	println("Enter Starting bet in the format [Quantity][Space][value]")
-	betMadeString, _ := reader.ReadString('\n')
-	betMade := strings.Fields(betMadeString)
-	Quantity, _ := strconv.Atoi(betMade[0])
-	Value, _ := strconv.Atoi(betMade[1])
+	var quantBet string
+	println("Enter Quantity:")
+	_, err := fmt.Scan(&quantBet)
+	if err != nil {
+		println("something went wrong")
+	}
+	var valueBet string
+	println("Enter Value: (1-6)")
+	_, err = fmt.Scan(&valueBet)
+	if err != nil {
+		println("something went wrong")
+	}
+	Quantity, _ := strconv.Atoi(quantBet)
+	Value, _ := strconv.Atoi(valueBet)
 	return Quantity, Value
 }
 
-func bet(currentVal int, currentQuant int) (int, int) {
-	reader := bufio.NewReader(os.Stdin)
-	println("Enter Starting bet in the format [Quantity][Space][value]")
-	betMadeString, _ := reader.ReadString('\n')
-	betMade := strings.Fields(betMadeString)
-	Quantity, _ := strconv.Atoi(betMade[0])
-	Value, _ := strconv.Atoi(betMade[1])
+func bet(currentQuant int, currentVal int) (int, int) {
+	var quantBet string
+	println("Enter Quantity:")
+	_, err := fmt.Scan(&quantBet)
+	if err != nil {
+		println("something went wrong")
+	}
+	var valueBet string
+	println("Enter Value: (1-6)")
+	_, err = fmt.Scan(&valueBet)
+	if err != nil {
+		println("something went wrong")
+	}
+	Quantity, _ := strconv.Atoi(quantBet)
+	Value, _ := strconv.Atoi(valueBet)
 	return Quantity, Value
 }
 
-func callBS() {
+func countDiceValues(players []*Player) []int {
+	quantityOfValues := []int{0, 0, 0, 0, 0, 0, 0}
+	for i := 0; i < len(players); i++ {
+		currentPlayer := players[i]
+		for j := 0; j < len(currentPlayer.dice); j++ {
+			currentDie := currentPlayer.dice[i]
+			switch currentDie.value {
+			case 1:
+				quantityOfValues[0]++
+			case 2:
+				quantityOfValues[1]++
+			case 3:
+				quantityOfValues[2]++
+			case 4:
+				quantityOfValues[3]++
+			case 5:
+				quantityOfValues[4]++
+			case 6:
+				quantityOfValues[5]++
+			}
+		}
+	}
+	return quantityOfValues
+}
+
+func revealDice(players []*Player) {
+	var quantityOfValues []int
+	quantityOfValues = countDiceValues(players)
+	fmt.Println("There were:")
+	for i := 0; i < len(quantityOfValues); i++ {
+		fmt.Println(strconv.Itoa(quantityOfValues[i]) + " " + strconv.Itoa(i+1) + "'s")
+	}
+}
+
+func callBS(players []*Player, caller *Player, accused *Player, currentQuant int, currentVal int) {
 	//Calling BS
+	quantityOfValues := countDiceValues(players)
+	fmt.Println("BS Called on: " + strconv.Itoa(currentQuant) + " " + strconv.Itoa(currentVal) + "'s")
+	if currentQuant <= quantityOfValues[currentVal-1] {
+		println(caller.Name + " was Wrong! They lose a Die")
+		caller.LoseDie()
+	} else {
+		println(caller.Name + " was Right! " + accused.Name + " lose a Die")
+		accused.LoseDie()
+	}
 }
