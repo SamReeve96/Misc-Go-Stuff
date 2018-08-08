@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
 	"strconv"
 )
 
@@ -15,13 +14,9 @@ type Die struct {
 	value int
 }
 
-func (die *Die) Roll() int {
-	return rand.Intn(6)
-}
-
-func (player *Player) LoseDie() {
+func (player *Player) LoseADie() {
 	playersDice := player.dice
-	//Dont care what die goes just remove
+	//Dont care what die goes just remove (in this case its the 2nd die)
 	playersDice = append(playersDice[:1], playersDice[2:]...)
 }
 
@@ -69,7 +64,8 @@ func RollDice(numOfDice int) []Die {
 	Dice := []Die{}
 	for i := 0; i < numOfDice; i++ {
 		newDie := Die{
-			value: rand.Intn(6),
+			///value: rand.Intn(6),
+			value: 10,
 		}
 		Dice = append(Dice, newDie)
 	}
@@ -83,7 +79,7 @@ func RoundRunner(roundNumber int, players []*Player) {
 	println("Round: " + strconv.Itoa(roundNumber))
 	for i := 0; i < len(players)+1; i++ {
 		if i == len(players) {
-			i = -1
+			i = -1 //Reached last player, reset to 1st player
 		} else {
 			println("---- " + players[i].Name + "'s Turn ----")
 			if currentVal == 0 {
@@ -91,6 +87,7 @@ func RoundRunner(roundNumber int, players []*Player) {
 				prevPlayer = players[i]
 			} else {
 				println("Current bet is: " + strconv.Itoa(currentQuant) + " " + strconv.Itoa(currentVal) + "'s")
+				///Show current players dice
 				inputValid := false
 				for inputValid == false {
 					println("Bet(1) or Call BS(2)")
@@ -110,6 +107,7 @@ func RoundRunner(roundNumber int, players []*Player) {
 						callBS(players, players[i], prevPlayer, currentQuant, currentVal)
 						println("New Round")
 						roundNumber++
+						prevPlayer = players[i]
 						for i := 0; i < len(players); i++ {
 							players[i].dice = RollDice(len(players[i].dice))
 						}
@@ -160,7 +158,7 @@ func bet(currentQuant int, currentVal int) (int, int) {
 }
 
 func countDiceValues(players []*Player) []int {
-	quantityOfValues := []int{0, 0, 0, 0, 0, 0, 0}
+	quantityOfValues := []int{0, 0, 0, 0, 0, 0}
 	for i := 0; i < len(players); i++ {
 		currentPlayer := players[i]
 		for j := 0; j < len(currentPlayer.dice); j++ {
@@ -199,9 +197,9 @@ func callBS(players []*Player, caller *Player, accused *Player, currentQuant int
 	fmt.Println("BS Called on: " + strconv.Itoa(currentQuant) + " " + strconv.Itoa(currentVal) + "'s")
 	if currentQuant <= quantityOfValues[currentVal-1] {
 		println(caller.Name + " was Wrong! They lose a Die")
-		caller.LoseDie()
+		caller.LoseADie()
 	} else {
 		println(caller.Name + " was Right! " + accused.Name + " lose a Die")
-		accused.LoseDie()
+		accused.LoseADie()
 	}
 }
